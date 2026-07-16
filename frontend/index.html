@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TripSmart — Flight Risk & Recommendation</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Clean font choice corresponding to modern UI dashboards -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="brand">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.3-1.8 1.1-.2.7.2 1.4.9 1.7l7.4 3.7-3.9 3.9-3.2-.8c-.5-.1-1.1.1-1.4.5-.4.4-.4 1 0 1.4l2.5 2.5c.2.2.5.3.8.3.1 0 .2 0 .4-.1l2.5-2.5c.4-.4.5-1 .4-1.4l-.8-3.2 3.9-3.9 3.7 7.4c.3.6.9.9 1.6.9.2 0 .4 0 .6-.1.7-.3 1.2-1.1 1-1.9z"/></svg>
+        <h1>TripSmart</h1>
+      </div>
+      <p class="subtitle">Compare flights, see the risk, get the recommendation.</p>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-panel">
+      <div class="search-inputs-wrapper">
+        <div class="field">
+          <label for="origin">Origin</label>
+          <input id="origin" type="text" value="MAA" maxlength="3" />
+        </div>
+        <div class="field-swap">⇆</div>
+        <div class="field">
+          <label for="destination">Destination</label>
+          <input id="destination" type="text" value="BOM" maxlength="3" />
+        </div>
+        <div class="field">
+          <label for="date">Date</label>
+          <input id="date" type="date" />
+        </div>
+        <div class="field">
+    <label for="preference">Preference</label>
+    <select id="preference">
+        <option value="best"> Best Overall</option>
+        <option value="cheapest"> Cheapest</option>
+        <option value="fastest"> Fastest</option>
+        <option value="lowest_risk"> Lowest Risk</option>
+    </select>
+</div>
+      </div>
+      
+      <div class="search-actions-wrapper">
+        <div class="cta-group">
+          <button id="searchBtn" onclick="searchFlights()">Search Flights</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Display Workspace Workspace Grid -->
+    <div class="results-layout-grid">
+      
+      <!-- Part 1: All Matching Flights Shown First -->
+      <section class="results-main">
+        <div class="section-container">
+          <h2 class="section-title">Matching Flights</h2>
+          <div id="flightList" class="flight-list">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Part 2: AI Deep Dive Recommendation Sidebar Panel -->
+      <aside id="recommendation" class="recommendation hidden">
+        <div class="recommendation-sticky-inner">
+          <h2> Recommendation Spotlight</h2>
+          
+          <div id="recommendationCard">
+            <!-- Main Recommended Flight Summary Card -->
+          </div>
+          
+          <!-- Deep Analysis Grid (Reasons, Stats, Comparison) -->
+          <div class="analysis-grid">
+            <div class="analysis-block">
+              <h3>Why This Flight?</h3>
+              <ul id="reasonsList" class="reasons-list"></ul>
+            </div>
+            <div class="analysis-block">
+              <h3>Search Statistics</h3>
+              <div id="statsBlock" class="stats-block"></div>
+            </div>
+          </div>
+          
+          <h3>AI Comprehensive Evaluation</h3>
+          <p id="explanation" class="explanation"></p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
