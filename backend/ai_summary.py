@@ -1,70 +1,82 @@
-"""
-ai_summary.py
+import os
 
-Generates a human-readable explanation for why a flight
-was recommended.
-"""
+from google import genai
+from dotenv import load_dotenv
 
-from backend.models import RankedFlight
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 
 def generate_summary(
-    best: RankedFlight,
-    cheapest: RankedFlight,
-    fastest: RankedFlight,
-    safest: RankedFlight,
-    alternatives: list[RankedFlight],
-) -> str:
+    best,
+    cheapest,
+    fastest,
+    safest,
+    alternatives,
+):
+    """
+    Uses Gemini to generate a natural-language recommendation
+    based on the recommendation engine output.
+    """
 
-    flight = best.flight
-    risk = best.risk
+    prompt = f"""
+You are TripSmart, an AI travel assistant.
 
-    summary = (
-        f"We recommend {flight.airline} {flight.flight_number} "
-        f"because it provides the best overall balance of reliability, "
-        f"travel time, and price.\n\n"
-    )
+A user searched for flights.
 
-    summary += (
-        f"• Fare: ₹{flight.fare:.0f}\n"
-        f"• Duration: {flight.duration_minutes} minutes\n"
-        f"• Stops: {flight.stops}\n"
-        f"• Risk Score: {risk.total_risk_score}\n"
-        f"• Comfort Score: {risk.comfort_score}/100\n\n"
-    )
+Recommended Flight:
+Airline: {best.flight.airline}
+Flight Number: {best.flight.flight_number}
+Fare: ₹{best.flight.fare}
+Duration: {best.flight.duration_minutes} minutes
+Stops: {best.flight.stops}
+Risk Score: {best.risk.total_risk_score}
+Comfort Score: {best.risk.comfort_score}
 
-    summary += "Why this flight?\n"
+Cheapest Flight:
+{cheapest.flight.airline} ({cheapest.flight.flight_number})
+Fare: ₹{cheapest.flight.fare}
 
-    for reason in risk.reasons[:4]:
-        summary += f"✓ {reason}\n"
+Fastest Flight:
+{fastest.flight.airline} ({fastest.flight.flight_number})
+Duration: {fastest.flight.duration_minutes} minutes
 
-    summary += "\nComparison:\n"
+Safest Flight:
+{safest.flight.airline} ({safest.flight.flight_number})
+Risk Score: {safest.risk.total_risk_score}
 
-    if flight.flight_id != cheapest.flight.flight_id:
-        diff = flight.fare - cheapest.flight.fare
-        summary += (
-            f"• It costs ₹{diff:.0f} more than the cheapest option, "
-            f"but offers a lower travel risk.\n"
-        )
-    else:
-        summary += "• This is also the cheapest available flight.\n"
+Reasons for recommendation:
+{", ".join(best.risk.reasons)}
 
-    if flight.flight_id != fastest.flight.flight_id:
-        diff = flight.duration_minutes - fastest.flight.duration_minutes
-        summary += (
-            f"• It is {diff} minutes longer than the fastest option "
-            f"while providing a better overall balance.\n"
-        )
-    else:
-        summary += "• This is also the fastest available flight.\n"
+Write a travel recommendation in 180-250 words.
 
-    if flight.flight_id == safest.flight.flight_id:
-        summary += "• It has the lowest risk score among all available flights.\n"
+The response should include:
 
-    if alternatives:
-        summary += (
-            f"\nWe evaluated {len(alternatives) + 1} flight options and "
-            "selected this itinerary because it offers the best overall value."
-        )
+1. A short recommendation paragraph.
+2. Explain why this flight was selected.
+3. Compare it with the cheapest flight.
+4. Compare it with the fastest flight.
+5. Mention any trade-offs in price, duration, or connections.
+6. Mention whether it is suitable for business travelers or leisure travelers.
+7. End with one final recommendation sentence.
 
-    return summary
+Write naturally like a travel advisor.
+Do not use markdown.
+"""
+
+    try:
+        response = client.models.generate_content(
+
+    model="gemini-2.0-flash-lite",
+
+    contents=prompt,
+
+)
+        print(response.text)      # Debug
+        return response.text
+    except Exception as e:
+        print(e)                  # VERY IMPORTANT
+        return f"Gemini Error: {e}"
